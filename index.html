@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-8 max-w-sm w-full space-y-6">
+        <h1 class="text-3xl font-bold text-center text-gray-800">QR Code Generator</h1>
+
+        <!-- Input Section -->
+        <div>
+            <label for="text-input" class="block text-sm font-medium text-gray-700 mb-1">Enter your text or URL:</label>
+            <textarea id="text-input" rows="4" class="block w-full rounded-md border-gray-300 shadow-sm p-3 focus:border-blue-500 focus:ring-blue-500 transition-all duration-300" placeholder="e.g., Hello World! or https://www.google.com"></textarea>
+        </div>
+
+        <!-- Button and Message -->
+        <div class="flex flex-col space-y-4">
+            <button id="generate-button" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
+                Generate QR Code
+            </button>
+            <p id="message-box" class="text-center text-sm font-medium text-red-500 opacity-0 transition-opacity duration-300"></p>
+        </div>
+
+        <!-- QR Code Display Section -->
+        <div class="flex justify-center items-center p-4 bg-gray-100 rounded-md">
+            <div id="qrcode" class="transition-opacity duration-500"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to DOM elements
+        const textInput = document.getElementById('text-input');
+        const generateButton = document.getElementById('generate-button');
+        const qrcodeDiv = document.getElementById('qrcode');
+        const messageBox = document.getElementById('message-box');
+
+        // Function to show a temporary message
+        const showMessage = (text, isError = true) => {
+            messageBox.textContent = text;
+            messageBox.classList.remove('opacity-0');
+            messageBox.classList.add('opacity-100');
+            if (isError) {
+                messageBox.classList.remove('text-green-500');
+                messageBox.classList.add('text-red-500');
+            } else {
+                messageBox.classList.remove('text-red-500');
+                messageBox.classList.add('text-green-500');
+            }
+            setTimeout(() => {
+                messageBox.classList.remove('opacity-100');
+                messageBox.classList.add('opacity-0');
+            }, 3000); // Hide message after 3 seconds
+        };
+
+        // Event listener for the generate button
+        generateButton.addEventListener('click', () => {
+            const textToEncode = textInput.value.trim();
+
+            // Clear previous QR code and message
+            qrcodeDiv.innerHTML = '';
+            messageBox.classList.remove('opacity-100');
+            messageBox.classList.add('opacity-0');
+
+            if (textToEncode) {
+                // Initialize a new QRCode instance
+                new QRCode(qrcodeDiv, {
+                    text: textToEncode,
+                    width: 256,
+                    height: 256,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                showMessage('QR code generated successfully!', false);
+            } else {
+                // Display an error if the input is empty
+                showMessage('Please enter text or a URL to generate a QR code.');
+            }
+        });
+    </script>
+</body>
+</html>
